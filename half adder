@@ -1,0 +1,19 @@
+module test_my_half_adder; 
+wire sum, c_out; //Outputs of UUT (in this case 
+// ?module my_half_adder?) declared as //wire
+reg a, b; // Inputs of UUT declared as ?reg?
+		
+my_half_adder AA(sum, c_out, a, b); ¬//Instantiating 
+¬										//UUT	
+
+
+initial 				//Simulation will end 
+#100 $finish; 			// at 100ns
+
+initial begin 				//Initially  a=x, b=x	
+#10 a = 0; b = 0; 		//After 10ns a=0, b=0
+#l0		 b = 1; 		//After 20ns a=0, b=1
+#10 a = 1; 			//After 30ns a=1, b=1
+#l0		 b = 0; 		//After 40ns a=1, b=0
+end 
+endmodule

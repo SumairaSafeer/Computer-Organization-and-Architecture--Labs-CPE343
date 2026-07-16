@@ -1,0 +1,48 @@
+.data
+prompt: .asciiz "Enter a decimal number: "
+result: .asciiz "The binary representation is: "
+newline: .asciiz "\n"
+space: .asciiz " "
+
+.text
+
+main:
+    # Prompt the user for a decimal number
+    li $v0, 4              # syscall to print string
+    la $a0, prompt         # load address of prompt
+    syscall
+
+    # Read the decimal number
+    li $v0, 5              # syscall to read integer
+    syscall
+    move $t0, $v0          # store the decimal number in $t0
+
+    # Print the result message
+    li $v0, 4              # syscall to print string
+    la $a0, result     # load address of result
+    syscall
+
+    # Initialize variables
+    li $t1, 32             # bit counter
+
+Convert_loop:
+    beqz $t1, end_print    # if the bit counter is 0, end print
+    srl $t2, $t0, 31       # shift right to get the leftmost bit
+    andi $t2, $t2, 1       # mask all bits except the last one
+    addi $t2, $t2, '0'     # convert bit to ASCII '0' or '1'
+    li $v0, 11             # syscall to print character
+    move $a0, $t2          # move bit to $a0
+    syscall
+    sll $t0, $t0, 1        # shift left the number by 1 bit to process next bit
+    subi $t1, $t1, 1       # decrement the bit counter
+    j Convert_loop         # repeat the loop
+
+end_print:
+    # Print a newline
+    li $v0, 4              # syscall to print string
+    la $a0, newline        # load address of newline
+    syscall
+
+    # Exit the program
+    li $v0, 10             # syscall to exit
+    syscall

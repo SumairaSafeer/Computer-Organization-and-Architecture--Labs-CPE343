@@ -1,0 +1,89 @@
+.text
+main:
+       	# The largest 32 bit positive two's complement number.
+	
+	li $s0, 0x7fffffff  
+	
+	# Trigger an arithmetic overflow exception. 
+       	
+       	addi $s1, $s0, 1
+	
+	# Trigger a bad data address (on load) exception.
+	
+	lw $s0, 0($zero)
+	
+	# Trigger a trap exception. 
+	
+	teqi $zero, 0
+.kdata
+		
+UNHANDLED_EXCEPTION:	.asciiz "===>      Unhandled exception       <===\n\n"
+UNHANDLED_INTERRUPT: 	.asciiz "===>      Unhandled interrupt       <===\n\n"
+OVERFLOW_EXCEPTION: 	.asciiz "===>      Arithmetic overflow       <===\n\n" 
+TRAP_EXCEPTION: 	.asciiz "===>         Trap exception         <===\n\n"
+BAD_ADDRESS_EXCEPTION: 	.asciiz "===>   Bad data address exception   <===\n\n"
+		
+.ktext 0x80000180  
+   
+__kernel_entry_point:
+
+	# Get value in cause register.
+	
+	mfc0 $k0, $13   
+	# Mask all but the exception code (bits 2 - 6) to zero.
+	
+	andi $k1, $k0, 0x00007c  
+	
+	# Shift two bits to the right to get the exception code. 
+	
+	srl  $k1, $k1, 2
+	
+	beqz $k1, __interrupt
+	
+__exception:
+
+	# Branch on value of the the exception code in $k1. 
+	
+	beq $k1, 12, __overflow_exception
+	beq $k1, 4, __trap_exception
+	beq $k1, 13, __bad_address
+todo_2:	
+	# TODO: Add code to branch to label __bad_address_exception for exception code 4. 	
+	
+	# TODO: Add code to branch to label __trap_exception for exception code 13. 
+	
+__unhandled_exception: 
+    	
+  	#  Use the MARS built-in system call 4 (print string) to print error messsage.
+	
+	li $v0, 4
+	la $a0, UNHANDLED_EXCEPTION
+	syscall
+ 
+ 	j __resume_from_exception
+	
+__overflow_exception:
+
+  	#  Use the MARS built-in system call 4 (print string) to print error messsage.
+	
+	li $v0, 4
+	la $a0, OVERFLOW_EXCEPTION
+	syscall
+ 
+ 	j __resume_from_exception
+ 	
+__interrupt:
+  __resume_from_exception:
+ 	mfc0 $k0, $14
+        addi $k0, $k0, 4 # TODO: Uncomment this instruction      
+       
+        # Update EPC in coprocessor 0.
+        
+        mtc0 $k0, $14
+_resume:
+            
+	# Use the eret (Exception RETurn) instruction to set the program counter
+	# (PC) to the value saved in the ECP register (register 14 in coporcessor 0).
+	
+	eret # Look at the value of $14 in Coprocessor 0 before single stepping.
+

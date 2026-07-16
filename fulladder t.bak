@@ -1,0 +1,48 @@
+module tb_my_full_adder;
+    reg [2:0] x;        // 3-bit input
+    wire [1:0] y;       // 2-bit output (sum and carry)
+    
+    // Instantiate the full adder
+    my_full_adder UUT (
+        .x(x),
+        .y(y)
+    );
+    
+    // Stimulus process
+    initial begin
+        // Display header
+        $display("x (input) | y (output: sum, carry)");
+        $display("-------------------------------");
+        
+        // Apply test vectors
+        x = 3'b000; // Test case 1: 0 + 0 + 0
+        #10;
+        
+        x = 3'b001; // Test case 2: 0 + 0 + 1
+        #10;
+        
+        x = 3'b010; // Test case 3: 0 + 1 + 0
+        #10;
+        
+        x = 3'b011; // Test case 4: 0 + 1 + 1
+        #10;
+        
+        x = 3'b100; // Test case 5: 1 + 0 + 0
+        #10;
+        
+        x = 3'b101; // Test case 6: 1 + 0 + 1
+        #10;
+        
+        x = 3'b110; // Test case 7: 1 + 1 + 0
+        #10;
+        
+        x = 3'b111; // Test case 8: 1 + 1 + 1
+        #10;
+        
+        // End simulation
+        $finish;
+    end
+    
+   
+    end
+endmodule

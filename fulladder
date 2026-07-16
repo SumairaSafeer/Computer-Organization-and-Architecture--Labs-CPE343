@@ -1,0 +1,9 @@
+module my_full_adder(input [2:0] x, output [1:0] y); 
+//Different style + use of vectors
+
+// x is 3-bit input & y is 2-bit output ,sum and carry;
+wire sum1,carry1,carry2;
+my_half_adder H1(sum1, carry1, x[0], x[1]); 
+my_half_adder H2(y[0], carry2, sum1, x[3]);
+or (y[1],carry1,carry2);
+endmodule
